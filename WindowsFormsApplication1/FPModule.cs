@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace WindowsFormsApplication1
 {
@@ -179,7 +180,8 @@ namespace WindowsFormsApplication1
 
 
 
-        [NonSerialized] protected SerialPort Interface;
+        //[NonSerialized] protected SerialPort Interface;
+        [NonSerialized] protected LoggerStream Interface;
 
         public event EventHandler ModuleEvent;
 
@@ -263,7 +265,9 @@ namespace WindowsFormsApplication1
             Monitoring = false;
         }
 
-        public FPModule(SerialPort sp, int a)
+ 
+
+        public FPModule(LoggerStream sp, int a)
         {
             string response;
             string checksumResponse;
@@ -275,6 +279,7 @@ namespace WindowsFormsApplication1
                 string command = ">" + address.ToString("X2") + "!A";
                 lock (Interface)
                 {
+                    
                     Interface.WriteLine(command + checksum(command));
                     response = Interface.ReadLine();
                 }
@@ -822,7 +827,7 @@ namespace WindowsFormsApplication1
             Modules = new SortedList<string, FPModule>();
         }
 
-        public bool GetNetwork(SerialPort sp)
+        public bool GetNetwork(LoggerStream  sp)
         {
             try {
 

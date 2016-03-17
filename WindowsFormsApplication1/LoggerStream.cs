@@ -7,15 +7,18 @@ using System.Net.Sockets;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace WindowsFormsApplication1
 {
-       class LoggerStream : Stream
+    [Serializable]
+       public class LoggerStream : Stream, IDisposable
     {
-        public Stream mystream;
-        public string ipAddress { get; set; }
-        public string ComPort { get; set; }
-        public int ipPort { get; set; }
+        private Stream mystream;
+
+        private string ipAddress;// { get; set; }
+        private string comport;// { get; set; }
+        private int ipPort;// { get; set; }
         public enum ST
         {
             Serial, TCP
@@ -40,15 +43,18 @@ namespace WindowsFormsApplication1
         }
         public LoggerStream(string Port)
         {
+            TcpPortName = null;
+            in_TCPClient = null;
             ComPort = Port;
             in_SerialPort = new SerialPort(Port);
             in_SerialPort.Open();
             mystream = in_SerialPort.BaseStream;
             StreamType = ST.Serial;
         }
+
         public LoggerStream(string add, int pn)
         {
-            byte[] buffer = new byte[80];
+           
             try
             {
                 in_TCPClient = new TcpClient(add, pn);
@@ -66,38 +72,16 @@ namespace WindowsFormsApplication1
                 }
 
                 StreamType = ST.TCP;
-                buffer = Encoding.ASCII.GetBytes(">00!B??\r");
+                TCPAddress = add;
+                TcpPort = pn;
+                ComPort = null;
+                in_SerialPort = null;
 
-                try
-                {
-                    mystream.Write(buffer, 0, 8);
-                }
-                catch (Exception E)
-                {
-                    Console.WriteLine(E.Message);
-                    throw E;
-                }
-
-                buffer = new byte[80];
-                Thread.Sleep(1000);
-
-                try
-                {
-                    mystream.Read(buffer, 0, 80);
-                    Debug.WriteLine(Encoding.Default.GetString(buffer));
-                }
-                catch (Exception E)
-                {
-                    Console.WriteLine(E.Message);
-                }
             }
             catch (Exception E)
             {
                 Console.WriteLine(E.Message);
             }
-
-            if(mystream != null)
-                mystream.Close();
 
         }
 
@@ -130,10 +114,49 @@ namespace WindowsFormsApplication1
 
         public SerialPort in_SerialPort { get; set; }
         public TcpClient in_TCPClient { get; set; }
-        public bool IsSerial { get; }
-        public bool IsConnected { get; }
-        public string PortName { get; set; }
+        public bool IsSerial
+        {
+            get
+            {
+                return (this.StreamType == ST.Serial ? true : false);
+            }
+        }
+        public bool IsOpen
+        {
+            get
+            {
+
+                if (in_SerialPort != null)
+                {
+                    if (in_SerialPort.IsOpen)
+                    {
+                        return true;
+                    }
+                }
+                if (in_TCPClient != null)
+                {
+                    if(in_TCPClient.Connected)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+             }
+        }
+        public string TcpPortName
+        {
+            get
+            {
+                
+                return tcpPort == 0 ? null : tcpPort.ToString();
+            }
+            set
+            {
+                tcpPort = TcpPortName == null ? 0 : int.Parse(TcpPortName);
+            }
+        }
         public string TCPAddress { get; set; }
+        private int tcpPort;
         public int TcpPort { get; set; }
 
 
@@ -156,6 +179,45 @@ namespace WindowsFormsApplication1
             set
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        public string ComPort
+        {
+            get
+            {
+                return comport;
+            }
+
+            set
+            {
+                comport = value;
+            }
+        }
+
+        public string IpAddress
+        {
+            get
+            {
+                return ipAddress;
+            }
+
+            set
+            {
+                ipAddress = value;
+            }
+        }
+
+        public int IpPort
+        {
+            get
+            {
+                return ipPort;
+            }
+
+            set
+            {
+                ipPort = value;
             }
         }
 
@@ -200,6 +262,63 @@ namespace WindowsFormsApplication1
             {
                 Console.WriteLine(E.Message);
             }
+        }
+        public void WriteLine(string Data)
+        {
+            Data = Data + "\r";
+            byte[] buffer = Encoding.ASCII.GetBytes(Data);
+            mystream.Write(buffer, 0, buffer.Length);
+
+
+        }
+        public string ReadLine()
+        {
+            byte[] singlebuf = new byte[1];
+            string result = "";
+            do
+            {
+                Read(singlebuf, 0, 1);
+                result = result + Encoding.ASCII.GetString(singlebuf);
+            } while (singlebuf[0] != '\r');
+
+            return result;
+
+        }
+
+        public string ReadTillEOL()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int ReadByte()
+        {
+            return mystream.ReadByte();
+        }
+        public override void WriteByte(byte value)
+        {
+            mystream.WriteByte(value);
+        }
+
+        protected override void Dispose( bool disposing)
+        {
+            if (this.IsOpen)
+                mystream.Close();
+            if (this.IsSerial)
+            {
+                if (this.IsOpen)
+                {
+                    mystream.Close();
+                    in_SerialPort.Close();
+                }
+            }
+            else if (!this.IsSerial)
+            {
+                if (this.IsOpen)
+                    mystream.Close();
+            }
+            mystream.Dispose();
+            base.Dispose();
+            
         }
     }
 

@@ -29,7 +29,8 @@ namespace WindowsFormsApplication1
         Series numbers2;
 
         private String[] ExistingPorts = SerialPort.GetPortNames();
-        private SerialPort portUsing;
+        //private SerialPort portUsing;
+        private LoggerStream portUsing = new LoggerStream("COM10");
         private Dictionary<string, string> Commands = new Dictionary<string, string>()
         {
             { "", ""},
@@ -85,9 +86,9 @@ namespace WindowsFormsApplication1
             {
                 CmbPorts.Items.Add(i);
             }
-            portUsing = new SerialPort("COM6", 115200, Parity.None, 8, StopBits.One);
-            portUsing.NewLine = "\r";
-
+            //portUsing = new SerialPort("COM6", 115200, Parity.None, 8, StopBits.One);
+            //portUsing.NewLine = "\r";
+            
             CmbPorts.Text = "COM6";
             numbers1 = new Series()
             {
@@ -145,14 +146,14 @@ namespace WindowsFormsApplication1
             listView1.Columns.Add("Hex", 50);
             listView1.Sorting = SortOrder.Ascending;
             //listView1.Columns.RemoveByKey("hex");
-            portUsing.Open();
-            if (portUsing.IsOpen)
-            {
-                CmbPorts.Enabled = false;
-                BtnOpen.Text = "Close Port";
-                test = new FPModule(portUsing, 2);
+            //portUsing.Open();
+            //if (portUsing.IsOpen)
+            //{
+            //    CmbPorts.Enabled = false;
+            //    BtnOpen.Text = "Close Port";
+            //    test = new FPModule(portUsing, 2);
 
-            }
+            //}
             listView1.EndUpdate();
             //       timer1.Interval = 3000;
             //       timer1.Start();
@@ -173,7 +174,7 @@ namespace WindowsFormsApplication1
             {
                 try
                 {
-                    portUsing.Open();
+                    portUsing =new LoggerStream(CmbPorts.Text) ;
                     BtnOpen.Text = "Close";
                 }
                 catch (Exception E)
@@ -726,7 +727,7 @@ namespace WindowsFormsApplication1
 
             }
 
-            portUsing.PortName = cb.Text.ToString();
+            portUsing.ComPort = cb.Text.ToString();
 
             
         }
@@ -746,7 +747,7 @@ namespace WindowsFormsApplication1
             
             try
             {
-                portUsing.ReadTimeout = 5000;
+                //portUsing.ReadTimeout = 5000;
                 //byte[] comout = Encoding.ASCII.GetBytes(TxbSerialCmd.Text.ToString() + ".");
                 //comout = comout.((byte)10);
                 //portUsing.Write(comout,0,comout.Length);
