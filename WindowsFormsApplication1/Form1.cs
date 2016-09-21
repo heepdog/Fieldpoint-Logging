@@ -53,7 +53,8 @@ namespace WindowsFormsApplication1
             InitializeComponent();
         }
 
-        FPModule test;
+        private static FPModule test;
+        public static FPModule sendmod { get { return test; } set { } }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -765,7 +766,7 @@ namespace WindowsFormsApplication1
             }
             catch (Exception)
             {
-
+                throw;
             }
         }
 
@@ -969,6 +970,17 @@ namespace WindowsFormsApplication1
 
             
 
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MonitorWindow temp = new MonitorWindow();
+            temp.ShowDialog();
         }
     }
 }

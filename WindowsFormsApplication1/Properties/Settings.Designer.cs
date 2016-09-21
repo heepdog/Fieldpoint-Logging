@@ -22,5 +22,29 @@ namespace WindowsFormsApplication1.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("COM6")]
+        public string LastPort {
+            get {
+                return ((string)(this["LastPort"]));
+            }
+            set {
+                this["LastPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SavedData")]
+        public string NetworkData {
+            get {
+                return ((string)(this["NetworkData"]));
+            }
+            set {
+                this["NetworkData"] = value;
+            }
+        }
     }
 }

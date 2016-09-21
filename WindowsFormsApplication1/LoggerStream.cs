@@ -46,10 +46,19 @@ namespace WindowsFormsApplication1
             TcpPortName = null;
             in_TCPClient = null;
             ComPort = Port;
-            in_SerialPort = new SerialPort(Port);
-            in_SerialPort.Open();
-            mystream = in_SerialPort.BaseStream;
-            StreamType = ST.Serial;
+            //portUsing = new SerialPort("COM6", 115200, Parity.None, 8, StopBits.One);
+            try
+            {
+                in_SerialPort = new SerialPort(Port, 115200, Parity.None, 8, StopBits.One);
+                in_SerialPort.Open();
+                mystream = in_SerialPort.BaseStream;
+                StreamType = ST.Serial;
+            }
+            catch (Exception  e)
+            {
+
+                throw;
+            }
         }
 
         public LoggerStream(string add, int pn)
@@ -68,7 +77,7 @@ namespace WindowsFormsApplication1
                 catch (Exception E)
                 {
                     Console.WriteLine(E.Message);
-                    throw E;
+                    throw ;
                 }
 
                 StreamType = ST.TCP;
@@ -81,6 +90,7 @@ namespace WindowsFormsApplication1
             catch (Exception E)
             {
                 Console.WriteLine(E.Message);
+                throw;
             }
 
         }
@@ -237,8 +247,8 @@ namespace WindowsFormsApplication1
             catch(Exception e)
             {
                 Debug.WriteLine(e.Message);
+                throw;
             }
-                return 0;
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -261,6 +271,7 @@ namespace WindowsFormsApplication1
             catch (Exception E)
             {
                 Console.WriteLine(E.Message);
+                throw;
             }
         }
         public void WriteLine(string Data)
@@ -273,16 +284,18 @@ namespace WindowsFormsApplication1
         }
         public string ReadLine()
         {
+            //read syncronus suing single byte buffer
             byte[] singlebuf = new byte[1];
-            string result = "";
+            StringBuilder sb = new StringBuilder();
             do
             {
                 Read(singlebuf, 0, 1);
-                result = result + Encoding.ASCII.GetString(singlebuf);
+                if(singlebuf[0] != 13)
+                    sb.Append(Encoding.ASCII.GetString(singlebuf));
+                //result = result + Encoding.ASCII.GetString(singlebuf);
             } while (singlebuf[0] != '\r');
 
-            return result;
-
+            return sb.ToString();
         }
 
         public string ReadTillEOL()
@@ -317,7 +330,7 @@ namespace WindowsFormsApplication1
                     mystream.Close();
             }
             mystream.Dispose();
-            base.Dispose();
+            
             
         }
     }

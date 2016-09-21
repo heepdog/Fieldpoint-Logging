@@ -42,10 +42,17 @@ namespace WindowsFormsApplication1
         protected Channel[] Channels;
         protected bool Monitoring = false;
 
+        public override string ToString()
+        {
+            return ("Address: " + address.ToString() + " Type: " + ModuleType[1]);
+        }
+        
+
+        
         #endregion
 
         #region Constants
-        protected Dictionary<string, string> QuadAttribs1 = new Dictionary<string, string>()
+        protected static readonly Dictionary<string, string> QUADATTRIBS1 = new Dictionary<string, string>()
         {
             { "00", "Unknown" },
             { "01", "Unknown1" },
@@ -55,7 +62,7 @@ namespace WindowsFormsApplication1
 
         };
 
-        protected Dictionary<string, string> QuadAttribs2 = new Dictionary<string, string>()
+        protected static readonly Dictionary<string, string> QUADATTRIBS2 = new Dictionary<string, string>()
         {
             { "00", "Unknown" },
             { "01", "Unknown1" },
@@ -64,7 +71,7 @@ namespace WindowsFormsApplication1
             { "04", "Unknown4" },
 
         };
-        protected Dictionary<string, string> ModuleErrors = new Dictionary<string, string>()
+        static protected readonly Dictionary<string, string> MODULEERRORS = new Dictionary<string, string>()
         {
             { "00", "E_PUCLR_EXP" },
             { "01", "E_INVALID_CMD" },
@@ -88,13 +95,13 @@ namespace WindowsFormsApplication1
             { "8C", "E_UNKNOWN" }
 
         };
-        protected Dictionary<string, string> aiAttribs1 = new Dictionary<string, string>()
+        static protected readonly Dictionary<string, string> AIATTRIBS1 = new Dictionary<string, string>()
         {
             { "00", "60Hz filter" },
             { "01", "50Hz filter" },
             {"02", "500Hz filter" }
         };
-        protected Dictionary<string, string> tcAttribs1 = new Dictionary<string, string>()
+        static protected readonly Dictionary<string, string> TCATTRIBS1 = new Dictionary<string, string>()
         {
             { "00", "J Type" },
             { "01", "K Type" },
@@ -105,13 +112,13 @@ namespace WindowsFormsApplication1
             { "06", "N Type" },
             { "07", "B Type" }
         };
-        protected Dictionary<string, string> cjAttribs1 = new Dictionary<string, string>()
+        static protected readonly Dictionary<string, string> CJATTRIBS1 = new Dictionary<string, string>()
         {
             {"00", "Internal Sensor" },
             {"01", "0° C" },
             {"02",  "25° C" }
         };
-        protected Dictionary<string, string> Ranges = new Dictionary<string, string>()
+        static protected readonly Dictionary<string, string> RANGES = new Dictionary<string, string>()
         {
             {"00", "0 to 21 mA" },
             {"01", "3.5 to 21 mA" },
@@ -128,6 +135,7 @@ namespace WindowsFormsApplication1
             {"0B", "-25 to 25 mV" },
             {"0C", "-20 to 80 mV" },
             {"0D", "-10 to 10 mV" },
+            {"10", "0 Unknown 0 Unknown" },
             {"20", "0 to 2048 degK" },
             {"21", "-270 to 1770 degC" },
             {"22", "-454 to 3218 degF" },
@@ -177,12 +185,37 @@ namespace WindowsFormsApplication1
         {
             return Channels[channel].rangeValue;
         }
-
-
-
+        public string getChannelName(int channel)
+        {
+            return Channels[channel].ToString();
+        }
+        public string getchannelRange(int channel)
+        {
+            return Channels[channel].channelRange;
+        }
+        public string getChannelScale(int channel)
+        {
+            return "X = " + Channels[channel].scaling.Key.ToString() + ": Y = " + Channels[channel].scaling.Value.ToString();
+        }
+        public string getChannelRaw(int channel)
+        {
+            return Channels[channel].rangeValue.ToString("N3");
+        }
         //[NonSerialized] protected SerialPort Interface;
         [NonSerialized] protected LoggerStream Interface;
-
+        public bool setInterface(LoggerStream newiface)
+        {
+            try
+            {
+                Interface = newiface;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+        }
         public event EventHandler ModuleEvent;
 
 
@@ -227,7 +260,7 @@ namespace WindowsFormsApplication1
 
         }
 
-        private BackgroundWorker bg1;
+        //private BackgroundWorker bg1;
 
         private void halfminupdate()
         {
@@ -282,8 +315,9 @@ namespace WindowsFormsApplication1
                     
                     Interface.WriteLine(command + checksum(command));
                     response = Interface.ReadLine();
+                    //response = response.Remove(response.Length - 1);
                 }
-                // trim acknowledgment and Cecksum 
+                // trim acknowledgment and Cecksum and EOL '\r'
                 checksumResponse = response.Remove(0, response.Length - 2);
                 response = response.Remove(response.Length - 2).Trim('A');
                 switch (response)
@@ -318,7 +352,7 @@ namespace WindowsFormsApplication1
 
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length; i++)
                         {
-                            Channels[i].setRange(Ranges[responseString[j--]]);
+                            Channels[i].setRange(RANGES[responseString[j--]]);
                         }
 
                         //get channel attributes 
@@ -334,7 +368,7 @@ namespace WindowsFormsApplication1
 
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length; i++)
                         {
-                            Channels[i].setatr("0001", responseString[j], aiAttribs1[responseString[j--]]);
+                            Channels[i].setatr("0001", responseString[j], AIATTRIBS1[responseString[j--]]);
                             //Channels[i].setAttribute("0001", responseString[j--]);
                         }
 
@@ -383,7 +417,7 @@ namespace WindowsFormsApplication1
 
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length; i++)
                         {
-                            Channels[i].setRange(Ranges[responseString[j--]]);
+                            Channels[i].setRange(RANGES[responseString[j--]]);
                         }
 
                         //get channel attributes 
@@ -400,7 +434,7 @@ namespace WindowsFormsApplication1
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length; i++)
                         {
                             // Channels[i] = new Channel(i);
-                            Channels[i].setatr("0001", responseString[j], tcAttribs1[responseString[j--]]);
+                            Channels[i].setatr("0001", responseString[j], TCATTRIBS1[responseString[j--]]);
 
                             //Channels[i].setAttribute("0001", responseString[j--]);
                         }
@@ -413,7 +447,7 @@ namespace WindowsFormsApplication1
                         }
                         responseString = SplitResponse(response, 2);
 
-                        Channels[8].setatr("0001", responseString[0], cjAttribs1[responseString[0]]);
+                        Channels[8].setatr("0001", responseString[0], CJATTRIBS1[responseString[0]]);
                         break;
 
                     case "0108":
@@ -475,7 +509,7 @@ namespace WindowsFormsApplication1
 
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length; i++)
                         {
-                            Channels[i].setRange(Ranges[responseString[j--]]);
+                            Channels[i].setRange(RANGES[responseString[j--]]);
                         }
 
                         //get channel attributes 
@@ -492,14 +526,18 @@ namespace WindowsFormsApplication1
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length / 2; i++)
                         {
                             // Channels[i] = new Channel(i);
-                            Channels[i].setatr("0001", responseString[j], QuadAttribs1[responseString[j--]]);
-                            Channels[i].setatr("0002", responseString[j], QuadAttribs2[responseString[j--]]);
+                            Channels[i].setatr("0001", responseString[j], QUADATTRIBS1[responseString[j--]]);
+                            Channels[i].setatr("0002", responseString[j], QUADATTRIBS2[responseString[j--]]);
 
                             //Channels[i].setAttribute("0002", responseString[j--]);
                             //Channels[i].setAttribute("0001", responseString[j--]);
                         }
 
+                        break;
 
+                    default:
+                        ModuleType[0] = response;
+                        ModuleType[1] = "UNKNOWN";
 
                         break;
 
@@ -650,6 +688,8 @@ namespace WindowsFormsApplication1
             //return getHexstring((sum % 256), 1, true);
             return (sum % 256).ToString("X2");
             }
+
+        
     }
 
 
@@ -687,14 +727,15 @@ namespace WindowsFormsApplication1
         }
         int? ChannelNumber = null;
         int filteredraw;
-        string ChannelRange;
+        public string channelRange { get; set; }
+
         float LastValue;
         public float displayValue;
         chdirection Direction;
         chmode Mode;
         protected Dictionary<string, string> Attributes = new Dictionary<string, string>();
         protected List<atr> attriblist = new List<atr>();
-        protected string Nickname;
+        protected string Nickname { get; set; }
 
         public Channel(int a)
         {
@@ -743,7 +784,7 @@ namespace WindowsFormsApplication1
                 return false;
             }
             string[] valsplit = value.Split(' ');
-            ChannelRange = value;
+            channelRange = value;
             rangeHigh = float.Parse(valsplit[2]);
             rangeLow = float.Parse(valsplit[0]);
             rangeUnit = valsplit[3];
@@ -753,7 +794,7 @@ namespace WindowsFormsApplication1
         public override string ToString()
         {
             // return base.ToString();)
-            return Nickname + ", " + LastValue + ", " + ChannelRange; 
+            return Nickname + ", " + LastValue + ", " + channelRange; 
 
         }
  /*       public int updateValue(float temp)
@@ -820,24 +861,28 @@ namespace WindowsFormsApplication1
     [Serializable]
     public class FPNetwork
     {
-        private SortedList<string, FPModule> Modules { get; set; }
+        private SortedList<int, FPModule> Modules { get; set; }
+        public int Length { get; set; }
 
         public FPNetwork()
         {
-            Modules = new SortedList<string, FPModule>();
+            Modules = new SortedList<int, FPModule>();
         }
 
         public bool GetNetwork(LoggerStream  sp)
         {
             try {
 
-                sp.WriteLine("<00!B" + FPModule.checksum("<00!B"));
-                int Return = int.Parse(sp.ReadLine().Substring(1, 2));
+                sp.WriteLine(">00!B" + FPModule.checksum(">00!B"));
+                string response = sp.ReadLine();
+                int Return = int.Parse(response.Substring(1, 2));
+                Length = Return - 1;
                 int address = 0;
-                for (int i = 0; i < Return;)
+                for (; address < Return; address++)
                 {
                     FPModule temp = new FPModule(sp, address);
-                    Modules.Add(temp.moduleType[1] + " " + address.ToString(), temp);
+                    Modules.Add(address, temp);
+
 
                 }
                 return true;
@@ -849,6 +894,38 @@ namespace WindowsFormsApplication1
                 return false;
             }
         }
+        public FPModule this[int index]
+        {
+            get
+            {
+                //return Modules.GetByIndex(Modules.IndexOfKey(index)) ;
+                FPModule r;
+                if (Modules.TryGetValue(index, out r))
+                {
+                    return r;
+                }
 
+                return null;
+            }
+
+        }
+        public bool UpdateNetwork()
+        {
+            foreach (FPModule m in Modules.Values )
+            {
+                m.UpdateValues();
+            }
+            return true;
+        }
+
+        public bool SetNetworkPort(LoggerStream s)
+        {
+            foreach (FPModule m in Modules.Values)
+            {
+                m.setInterface(s);
+            }
+            return true;
+
+        }
     }
 }
