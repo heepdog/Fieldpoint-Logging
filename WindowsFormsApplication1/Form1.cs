@@ -113,6 +113,9 @@ namespace WindowsFormsApplication1
             chart1.Series.Add("temp" );
             //chart1.Series.Add(numbers2);
             chart1.Series[0].XValueType  = ChartValueType.Time;
+            chart1.Series[0].YValueType = ChartValueType.Double;
+           
+
             //chart1.Series[1].XValueType = ChartValueType.Time;
             //chart1.DataSource = dataGridView1;
 
@@ -159,7 +162,8 @@ namespace WindowsFormsApplication1
             //       timer1.Interval = 3000;
             //       timer1.Start();
 
-            test.ModuleEvent += Test_ModuleEvent;
+            // this is the null reference used when trying to fiere an event from the module
+//            test.ModuleEvent += Test_ModuleEvent;
 
         }
 
@@ -764,7 +768,12 @@ namespace WindowsFormsApplication1
 
 
             }
-            catch (Exception)
+            catch (IOException ept)
+            {
+                MessageBox.Show("Could not connect with server\n" + ept.Message.ToString());
+            }
+
+            catch (Exception ept)
             {
                 throw;
             }
@@ -834,7 +843,7 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //test = new FPModule(portUsing, 2);
+            
             test.calibrateChannelDisplay(2, 0,(float)23850, (float)2, (float)38750);
             test.calibrateChannelDisplay(0, 0, (float)12317, (float)-10, (float)30925);
             test.UpdateValues();
@@ -843,31 +852,6 @@ namespace WindowsFormsApplication1
 
         private void btnsavexml_Click(object sender, EventArgs e)
         {
-            FPModule newtest = new FPModule();
-            //newtest.seconds = 100;
-            //newtest.seconds2 = 1;
-
-            //System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(newtest.GetType());
-
-            //var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.xml";
-            //System.IO.FileStream file = System.IO.File.Create(path);
-
-            //writer.Serialize(file, newtest);
-            //file.Close();
-
-            IFormatter formatter = new BinaryFormatter();
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.soap";
-            //Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
-            //formatter.Serialize(stream, test);
-            //stream.Close();
-
-            //FPModule newtest2 = new FPModule();
-            IFormatter formatter2 = new BinaryFormatter();
-            //var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.soap";
-            Stream stream2 = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            //MyObject obj = (MyObject)formatter.Deserialize(stream);
-            test = (FPModule)formatter.Deserialize(stream2);
-            stream2.Close();
         }
 
         private void btMonitor_Click(object sender, EventArgs e)
@@ -877,9 +861,15 @@ namespace WindowsFormsApplication1
             //else
             //    test.monitorModule(false);
             if (!backgroundWorker1.IsBusy)
+            {
                 backgroundWorker1.RunWorkerAsync();
+                btMonitor.Text = "Stop Monitor";
+            }
             else
+            {
                 backgroundWorker1.CancelAsync();
+                btMonitor.Text = "Start Monitor";
+            }
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -888,7 +878,7 @@ namespace WindowsFormsApplication1
             while (!worker.CancellationPending)
             { 
 
-            //test.UpdateValues();
+            test.UpdateValues();
             //test.onModuleEvent(new CustomEventArgs("Updated Values"));
             worker.ReportProgress(1);
             Debug.WriteLine("module updated");
@@ -961,11 +951,11 @@ namespace WindowsFormsApplication1
             LoggerStream test;
             if (TBAddress.Text == "")
             {
-                test = new LoggerStream(TBPort.Text.ToString());
+                portUsing = new LoggerStream(TBPort.Text.ToString());
             }
             else
             {
-                test = new LoggerStream(TBAddress.Text.ToString(), int.Parse(TBPort.Text.ToString()));
+                portUsing = new LoggerStream(TBAddress.Text.ToString(), int.Parse(TBPort.Text.ToString()));
             }
 
             
@@ -981,6 +971,72 @@ namespace WindowsFormsApplication1
         {
             MonitorWindow temp = new MonitorWindow();
             temp.ShowDialog();
+        }
+
+        private void TBAddress_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void createModule_Click(object sender, EventArgs e)
+        {
+           if(portUsing.IsOpen)
+                test = new FPModule(portUsing, int.Parse(TxbModule.Text.ToString()));
+           else
+                MessageBox.Show("portUsing is not open");
+        }
+
+        private void Savexml_Click(object sender, EventArgs e)
+        {
+            FPModule newtest = new FPModule();
+            //newtest.seconds = 100;
+            //newtest.seconds2 = 1;
+
+            //System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(newtest.GetType());
+
+            //var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.xml";
+            //System.IO.FileStream file = System.IO.File.Create(path);
+
+            //writer.Serialize(file, newtest);
+            //file.Close();
+
+            IFormatter formatter = new BinaryFormatter();
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.soap";
+            Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            formatter.Serialize(stream, test);
+            stream.Close();
+
+        }
+
+        private void btngetxml_Click(object sender, EventArgs e)
+        {
+            FPModule newtest = new FPModule();
+            //newtest.seconds = 100;
+            //newtest.seconds2 = 1;
+
+            //System.Xml.Serialization.XmlSerializer writer = new System.Xml.Serialization.XmlSerializer(newtest.GetType());
+
+            //var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.xml";
+            //System.IO.FileStream file = System.IO.File.Create(path);
+
+            //writer.Serialize(file, newtest);
+            //file.Close();
+
+            IFormatter formatter = new BinaryFormatter();
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.soap";
+            //Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            //formatter.Serialize(stream, test);
+            //stream.Close();
+
+            //FPModule newtest2 = new FPModule();
+            IFormatter formatter2 = new BinaryFormatter();
+            //var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview2.soap";
+            Stream stream2 = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            //MyObject obj = (MyObject)formatter.Deserialize(stream);
+            test = (FPModule)formatter.Deserialize(stream2);
+            stream2.Close();
+            test.setInterface(portUsing);
+
         }
     }
 }

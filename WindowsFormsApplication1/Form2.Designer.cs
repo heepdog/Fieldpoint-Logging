@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -40,8 +39,14 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.dgv_ModuleData = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
+            this.btn_next = new System.Windows.Forms.Button();
+            this.btn_prev = new System.Windows.Forms.Button();
+            this.AtribListBox = new System.Windows.Forms.ListBox();
+            this.btn_calibrate = new System.Windows.Forms.Button();
+            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.btn_reloadmod = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ModuleData)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox1
@@ -51,10 +56,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(249, 20);
             this.textBox1.TabIndex = 1;
-            // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
             // 
             // label1
             // 
@@ -130,17 +131,79 @@
             // 
             // dgv_ModuleData
             // 
-            this.dgv_ModuleData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_ModuleData.Location = new System.Drawing.Point(14, 147);
+            this.dgv_ModuleData.Location = new System.Drawing.Point(14, 152);
             this.dgv_ModuleData.Name = "dgv_ModuleData";
             this.dgv_ModuleData.Size = new System.Drawing.Size(642, 324);
             this.dgv_ModuleData.TabIndex = 0;
+            this.dgv_ModuleData.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_ModuleData_CellDoubleClick);
+            this.dgv_ModuleData.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_ModuleData_RowEnter);
+            this.dgv_ModuleData.RowHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_ModuleData_RowHeaderMouseClick);
+            this.dgv_ModuleData.MouseHover += new System.EventHandler(this.dgv_ModuleData_MouseHover);
+            this.dgv_ModuleData.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dgv_ModuleData_MouseMove);
+            // 
+            // btn_next
+            // 
+            this.btn_next.Location = new System.Drawing.Point(95, 505);
+            this.btn_next.Name = "btn_next";
+            this.btn_next.Size = new System.Drawing.Size(75, 23);
+            this.btn_next.TabIndex = 10;
+            this.btn_next.Text = "Next";
+            this.btn_next.UseVisualStyleBackColor = true;
+            this.btn_next.Click += new System.EventHandler(this.btn_next_Click);
+            // 
+            // btn_prev
+            // 
+            this.btn_prev.Location = new System.Drawing.Point(14, 505);
+            this.btn_prev.Name = "btn_prev";
+            this.btn_prev.Size = new System.Drawing.Size(75, 23);
+            this.btn_prev.TabIndex = 11;
+            this.btn_prev.Text = "Prev";
+            this.btn_prev.UseVisualStyleBackColor = true;
+            this.btn_prev.Click += new System.EventHandler(this.btn_prev_Click);
+            // 
+            // AtribListBox
+            // 
+            this.AtribListBox.FormattingEnabled = true;
+            this.AtribListBox.Location = new System.Drawing.Point(87, 115);
+            this.AtribListBox.Name = "AtribListBox";
+            this.AtribListBox.Size = new System.Drawing.Size(120, 95);
+            this.AtribListBox.TabIndex = 12;
+            this.AtribListBox.Visible = false;
+            // 
+            // btn_calibrate
+            // 
+            this.btn_calibrate.Location = new System.Drawing.Point(217, 508);
+            this.btn_calibrate.Name = "btn_calibrate";
+            this.btn_calibrate.Size = new System.Drawing.Size(67, 19);
+            this.btn_calibrate.TabIndex = 13;
+            this.btn_calibrate.Text = "calibrate";
+            this.btn_calibrate.UseVisualStyleBackColor = true;
+            this.btn_calibrate.Click += new System.EventHandler(this.btn_calibrate_Click);
+            // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
+            // 
+            // btn_reloadmod
+            // 
+            this.btn_reloadmod.Location = new System.Drawing.Point(359, 509);
+            this.btn_reloadmod.Name = "btn_reloadmod";
+            this.btn_reloadmod.Size = new System.Drawing.Size(75, 23);
+            this.btn_reloadmod.TabIndex = 14;
+            this.btn_reloadmod.Text = "Reload Module";
+            this.btn_reloadmod.UseVisualStyleBackColor = true;
+            this.btn_reloadmod.Click += new System.EventHandler(this.ReloadModule_Click);
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(682, 540);
+            this.Controls.Add(this.btn_reloadmod);
+            this.Controls.Add(this.btn_calibrate);
+            this.Controls.Add(this.AtribListBox);
+            this.Controls.Add(this.btn_prev);
+            this.Controls.Add(this.btn_next);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -153,9 +216,10 @@
             this.Controls.Add(this.dgv_ModuleData);
             this.Name = "Form2";
             this.Text = "Form2";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form2_FormClosing);
             this.Load += new System.EventHandler(this.Form2_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ModuleData)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -173,5 +237,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.DataGridView dgv_ModuleData;
+        private System.Windows.Forms.Button btn_next;
+        private System.Windows.Forms.Button btn_prev;
+        private System.Windows.Forms.ListBox AtribListBox;
+        private System.Windows.Forms.Button btn_calibrate;
+        private System.Windows.Forms.Button btn_reloadmod;
     }
 }

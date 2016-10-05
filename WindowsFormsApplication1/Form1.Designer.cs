@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.CmbPorts = new System.Windows.Forms.ComboBox();
             this.BtnOpen = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -75,13 +75,14 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button1 = new System.Windows.Forms.Button();
             this.txbnewdata = new System.Windows.Forms.TextBox();
             this.txbnewdata2 = new System.Windows.Forms.TextBox();
-            this.btnsavexml = new System.Windows.Forms.Button();
+            this.btngetxml = new System.Windows.Forms.Button();
             this.btMonitor = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.dataSet1 = new System.Data.DataSet();
@@ -92,9 +93,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.logClassbtn = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.button2 = new System.Windows.Forms.Button();
+            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.Savexml = new System.Windows.Forms.Button();
+            this.createModule = new System.Windows.Forms.Button();
             this.GrbChannels.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -547,6 +549,14 @@
             this.toolStrip1.TabIndex = 25;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(56, 22);
+            this.toolStripButton1.Text = "Open";
+            // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
@@ -557,21 +567,21 @@
             // 
             // chart1
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chart1.Legends.Add(legend2);
             this.chart1.Location = new System.Drawing.Point(909, 289);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
-            series2.Legend = "Legend1";
-            series2.Name = "BarChart";
-            this.chart1.Series.Add(series1);
-            this.chart1.Series.Add(series2);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Bar;
+            series4.Legend = "Legend1";
+            series4.Name = "BarChart";
+            this.chart1.Series.Add(series3);
+            this.chart1.Series.Add(series4);
             this.chart1.Size = new System.Drawing.Size(377, 206);
             this.chart1.TabIndex = 26;
             this.chart1.Text = "chart1";
@@ -583,7 +593,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(61, 37);
             this.button1.TabIndex = 27;
-            this.button1.Text = "button1";
+            this.button1.Text = "calibrate inputs";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -601,15 +611,15 @@
             this.txbnewdata2.Size = new System.Drawing.Size(194, 20);
             this.txbnewdata2.TabIndex = 29;
             // 
-            // btnsavexml
+            // btngetxml
             // 
-            this.btnsavexml.Location = new System.Drawing.Point(179, 252);
-            this.btnsavexml.Name = "btnsavexml";
-            this.btnsavexml.Size = new System.Drawing.Size(75, 23);
-            this.btnsavexml.TabIndex = 30;
-            this.btnsavexml.Text = "button2";
-            this.btnsavexml.UseVisualStyleBackColor = true;
-            this.btnsavexml.Click += new System.EventHandler(this.btnsavexml_Click);
+            this.btngetxml.Location = new System.Drawing.Point(179, 252);
+            this.btngetxml.Name = "btngetxml";
+            this.btngetxml.Size = new System.Drawing.Size(75, 23);
+            this.btngetxml.TabIndex = 30;
+            this.btngetxml.Text = "Get XML";
+            this.btngetxml.UseVisualStyleBackColor = true;
+            this.btngetxml.Click += new System.EventHandler(this.btngetxml_Click);
             // 
             // btMonitor
             // 
@@ -651,7 +661,8 @@
             this.TBAddress.Name = "TBAddress";
             this.TBAddress.Size = new System.Drawing.Size(100, 20);
             this.TBAddress.TabIndex = 33;
-            this.TBAddress.Text = "192.168.1.145";
+            this.TBAddress.Text = "192.168.1.109";
+            this.TBAddress.TextChanged += new System.EventHandler(this.TBAddress_TextChanged);
             // 
             // TBPort
             // 
@@ -703,19 +714,6 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(56, 22);
-            this.toolStripButton1.Text = "Open";
-            // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
-            this.form1BindingSource.CurrentChanged += new System.EventHandler(this.form1BindingSource_CurrentChanged);
-            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(31, 254);
@@ -726,11 +724,38 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
+            this.form1BindingSource.CurrentChanged += new System.EventHandler(this.form1BindingSource_CurrentChanged);
+            // 
+            // Savexml
+            // 
+            this.Savexml.Location = new System.Drawing.Point(179, 289);
+            this.Savexml.Name = "Savexml";
+            this.Savexml.Size = new System.Drawing.Size(75, 23);
+            this.Savexml.TabIndex = 40;
+            this.Savexml.Text = "save xml";
+            this.Savexml.UseVisualStyleBackColor = true;
+            this.Savexml.Click += new System.EventHandler(this.Savexml_Click);
+            // 
+            // createModule
+            // 
+            this.createModule.Location = new System.Drawing.Point(15, 120);
+            this.createModule.Name = "createModule";
+            this.createModule.Size = new System.Drawing.Size(90, 49);
+            this.createModule.TabIndex = 41;
+            this.createModule.Text = "Create module using address";
+            this.createModule.UseVisualStyleBackColor = true;
+            this.createModule.Click += new System.EventHandler(this.createModule_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1311, 554);
+            this.Controls.Add(this.createModule);
+            this.Controls.Add(this.Savexml);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.logClassbtn);
@@ -740,7 +765,7 @@
             this.Controls.Add(this.TBAddress);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btMonitor);
-            this.Controls.Add(this.btnsavexml);
+            this.Controls.Add(this.btngetxml);
             this.Controls.Add(this.txbnewdata2);
             this.Controls.Add(this.txbnewdata);
             this.Controls.Add(this.button1);
@@ -840,7 +865,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox txbnewdata;
         private System.Windows.Forms.TextBox txbnewdata2;
-        private System.Windows.Forms.Button btnsavexml;
+        private System.Windows.Forms.Button btngetxml;
         private System.Windows.Forms.Button btMonitor;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Data.DataSet dataSet1;
@@ -852,6 +877,8 @@
         private System.Windows.Forms.Button logClassbtn;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button Savexml;
+        private System.Windows.Forms.Button createModule;
     }
 }
 

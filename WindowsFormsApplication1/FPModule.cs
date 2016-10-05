@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace WindowsFormsApplication1
 {
@@ -40,6 +41,11 @@ namespace WindowsFormsApplication1
             get; set;
         }
         protected Channel[] Channels;
+        public int size()
+        {
+            return Channels.Length;
+
+        }
         protected bool Monitoring = false;
 
         public override string ToString()
@@ -154,12 +160,18 @@ namespace WindowsFormsApplication1
         };
 
         #endregion
+
+
         public bool calibrateChannelDisplay(int number, float display1, float raw1, float display2, float raw2)
         {
+            if (number > this.size() || number < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[number].calibrate(display1, raw1, display2, raw2);
 
         }
-        protected bool refreshData(string data)
+        protected bool refreshData(string data, int filtering)
         {
             string[] responseString = SplitResponse(data, 4);
 
@@ -167,7 +179,7 @@ namespace WindowsFormsApplication1
             {
                 //    int temp = int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber);
                 //  Channels[i].updateValue((float)((temp / 65535.0 * (Channels[i].rangeHigh - Channels[i].rangeLow)) + Channels[i].rangeLow));
-                Channels[i].updateValue(int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber));
+                Channels[i].updateValue(int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber), filtering);
             }
 
 
@@ -175,31 +187,71 @@ namespace WindowsFormsApplication1
         }
         public string getchannelunits(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[channel].rangeUnit;
         }
         public double getChannelDisplayValue(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds", this.ToString() + " channel: " + channel.ToString() );
+            }
             return Channels[channel].displayValue;
         }
         public double getChannelUnitValue(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[channel].rangeValue;
         }
         public string getChannelName(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[channel].ToString();
         }
         public string getchannelRange(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[channel].channelRange;
         }
         public string getChannelScale(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return "X = " + Channels[channel].scaling.Key.ToString() + ": Y = " + Channels[channel].scaling.Value.ToString();
         }
-        public string getChannelRaw(int channel)
+        public int getChannelRaw(int channel)
         {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
+            return Channels[channel].filteredraw;
+        }
+        public string getChannelrange(int channel)
+        {
+            if (channel > this.size() || channel < 0)
+            {
+                throw new ArgumentException("Argument is out of bounds");
+            }
             return Channels[channel].rangeValue.ToString("N3");
+        }
+        public void setChannelNickname(int ch, string Name)
+        {
+            Channels[ch].setNickname(Name);
         }
         //[NonSerialized] protected SerialPort Interface;
         [NonSerialized] protected LoggerStream Interface;
@@ -215,6 +267,10 @@ namespace WindowsFormsApplication1
                 return false;
             }
             
+        }
+        public LoggerStream getInterface()
+        {
+            return Interface;
         }
         public event EventHandler ModuleEvent;
 
@@ -325,7 +381,7 @@ namespace WindowsFormsApplication1
                     case "0001"://FP - 1000
                         ModuleType[0] = response;
                         ModuleType[1] = "FP-1000";
-                        //Channels = new Channel[8];
+                        Channels = new Channel[0];
 
                         break;
 
@@ -487,16 +543,22 @@ namespace WindowsFormsApplication1
                     case "0116"://FP-510_QUAD
                         ModuleType[0] = response;
                         ModuleType[1] = "FP-510_QUAD";
-                        Channels = new Channel[16];
+                        Channels = new Channel[18];
+                        //chanels are 16bit counters 0,3 combine for a 32bit counter in channel 16 1,4 combine in chanel 17
                         for (int i = 0; i < 12; i++)
                         {
                             Channels[i] = new Channel(i, Channel.chdirection.input, Channel.chmode.analog);
                         }
+                        //Channels for index
                         for (int i = 12; i < 16; i++)
                         {
                             Channels[i] = new Channel(i, Channel.chdirection.input, Channel.chmode.digital);
                         }
-
+                        //channels to combine 16 bit counts
+                        for ( int i = 16; i < 18; i++)
+                        {
+                            Channels[i] = new Channel(i, Channel.chdirection.input, Channel.chmode.digital);
+                        }
 
                         // Get Channel Ranges
                         command = ">" + address.ToString("X2") + "!EFFFF00001000010000100001000010000100001000010000100001000010000100001000010000100001";
@@ -525,12 +587,9 @@ namespace WindowsFormsApplication1
 
                         for (int i = 0, j = responseString.Length - 1; i < responseString.Length / 2; i++)
                         {
-                            // Channels[i] = new Channel(i);
                             Channels[i].setatr("0001", responseString[j], QUADATTRIBS1[responseString[j--]]);
                             Channels[i].setatr("0002", responseString[j], QUADATTRIBS2[responseString[j--]]);
 
-                            //Channels[i].setAttribute("0002", responseString[j--]);
-                            //Channels[i].setAttribute("0001", responseString[j--]);
                         }
 
                         break;
@@ -569,7 +628,7 @@ namespace WindowsFormsApplication1
                         response = Interface.ReadLine();
                     }
 
-                    refreshData(response);
+                    refreshData(response,10);
 
                     break;
 
@@ -606,7 +665,7 @@ namespace WindowsFormsApplication1
                         int temp = int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber);
                         Channels[i].updateValue(((temp / 65535 * (Channels[i].rangeHigh - Channels[i].rangeLow)) + Channels[i].rangeLow));
                     }*/
-                    refreshData(response);
+                    refreshData(response,10);
 
                     break;
 
@@ -645,19 +704,33 @@ namespace WindowsFormsApplication1
                     break;
 
                 case "0116"://FP-510_QUAD
-                    //TODO: create Values for quad
+                            //TODO: create Values for quad
+                    command = ">" + address.ToString("X2") + "!F0FFF";
+                    lock (Interface)
+                    {
+                        Interface.WriteLine(command + checksum(command));
+                        response = Interface.ReadLine();
+                    }
+                    refreshData(response,1);
+                    int lower = Channels[0].lastraw;
+                    int upper = Channels[4].lastraw << 16;
+                    Channels[16].updateValue(lower + upper,1);
+
+                    //uncomment for channel 17
+                    //lower = Channels[1].lastraw;
+                    //upper = Channels[5].lastraw << 16;
+                    //Channels[17].updateValue(lower + upper, 1);
 
                     break;
 
 
             }
-
-
-        
-    
-
-
             return true;
+        }
+        
+        public string[] getchannelattribs(int chan)
+        {
+            return Channels[chan].getatriblist();
         }
 
         private string[] SplitResponse(string r, int size)
@@ -708,6 +781,7 @@ namespace WindowsFormsApplication1
         public enum chdirection { input, output };
         public enum chmode { analog, digital };
         public float rangeHigh{ get; set; }
+        public int lastraw;
         public float rangeLow { get; set; }
         public string rangeUnit { get; set; }
         public KeyValuePair<float, float> scaling { get; set; } = new KeyValuePair<float, float>(1, 0);
@@ -726,7 +800,7 @@ namespace WindowsFormsApplication1
 
         }
         int? ChannelNumber = null;
-        int filteredraw;
+        public int filteredraw;
         public string channelRange { get; set; }
 
         float LastValue;
@@ -752,7 +826,7 @@ namespace WindowsFormsApplication1
 
         }
         public bool setatr(string m, string s, string d)
-            {
+        {
             if (ChannelNumber == null)
             {
                 return false;
@@ -764,8 +838,18 @@ namespace WindowsFormsApplication1
 
             attriblist.Add(temp);
             return true;
-
         }
+        public string[] getatriblist()
+        {
+            string[] listing = new string[attriblist.Count()];
+            for (int i = 0; i < attriblist.Count(); i++)
+            {
+                listing[i] = attriblist[i].ToString();
+            }
+            return listing;
+        }
+
+        
         //public bool setAttribute(string key, string value)
         //{
         //    if (ChannelNumber == null)
@@ -824,15 +908,30 @@ namespace WindowsFormsApplication1
  //         out: 1 Success, 0 Failure (temp is not within range
  //************************************************************************************
   
-        public int updateValue(int temp)
+        public int updateValue(int temp, int filtering)
         {
-
-            if ((Math.Abs(filteredraw - temp) < 1000000) || (filter.Count == 0))
-                filter.Enqueue(temp);
-            else
+            if (temp < 0)
+            {
+                MessageBox.Show(this. Nickname + " value is negative");
                 return 0;
+            }
+            while (filtering < filter.Count)
+            {
+                filter.Dequeue();
+            }
+            //if ((Math.Abs(filteredraw - temp) < 1000) || (filter.Count == 0))
+            if ((temp != 0) && (temp < 66000) || (filter.Count == 0) || (Math.Abs(lastraw - temp) < 1000))
+            {
+                filter.Enqueue(temp);
+                lastraw = temp;
+            }
+            else
+            {
+                filter.Dequeue();
+                return 0;
+            }
 
-            if (filter.Count > 10)
+            if (filter.Count > filtering)
                 filter.Dequeue();
            
             filteredraw = 0;
@@ -841,7 +940,7 @@ namespace WindowsFormsApplication1
             {
                 filteredraw = filteredraw + i;
             }
-            filteredraw = filteredraw / filter.Count;
+            filteredraw = filteredraw / (int)(filter.Count);
 
             rangeValue = (float)((filteredraw / 65535.0 * (rangeHigh - rangeLow)) + rangeLow);
             LastValue= (float)((temp / 65535.0 * (rangeHigh - rangeLow)) + rangeLow);
@@ -856,17 +955,55 @@ namespace WindowsFormsApplication1
 
             return true;
         }
+
+        internal void setNickname(string name)
+        {
+            Nickname = name;
+            //throw new NotImplementedException();
+        }
     }
 
     [Serializable]
-    public class FPNetwork
+    public class FPNetwork : IEnumerable
     {
+        
+        public IEnumerator GetEnumerator()
+        {
+            return new NetworkEnumerator(this);
+        }
+
+        private class NetworkEnumerator : IEnumerator
+        {
+            private int position = -1;
+            private FPNetwork nw;
+
+            public NetworkEnumerator(FPNetwork nw)
+            {
+                this.nw = nw;
+            }
+
+            public bool MoveNext()
+            {
+                position++;
+                return (position < nw.Modules.Count);
+            }
+
+            public void Reset()
+            { position = -1; }
+
+            public object Current
+            {
+                get { return nw.Modules[position]; }
+            }
+        }
         private SortedList<int, FPModule> Modules { get; set; }
         public int Length { get; set; }
+        public bool IsConfigured { get; internal set; }
 
         public FPNetwork()
         {
             Modules = new SortedList<int, FPModule>();
+            IsConfigured = false;
         }
 
         public bool GetNetwork(LoggerStream  sp)
@@ -885,12 +1022,14 @@ namespace WindowsFormsApplication1
 
 
                 }
+                IsConfigured = true;
                 return true;
             }
             catch (Exception e)
             {
                 MessageBox.Show("Unable to Get Network", "FP Error", MessageBoxButtons.OK);
                 Debug.WriteLine(e.Message);
+                IsConfigured = false;
                 return false;
             }
         }
@@ -906,6 +1045,15 @@ namespace WindowsFormsApplication1
                 }
 
                 return null;
+            }
+            set
+            {
+                FPModule r;
+                Modules.TryGetValue(index, out r);
+                LoggerStream l = r.getInterface();
+
+                Modules[index] = new FPModule(l, index);
+
             }
 
         }

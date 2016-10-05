@@ -21,10 +21,21 @@ namespace WindowsFormsApplication1
         private int ipPort;// { get; set; }
         public enum ST
         {
-            Serial, TCP
+            Serial, TCP, Undef
         }
         public ST StreamType;
 
+
+
+        public LoggerStream()
+        {
+            StreamType = ST.Undef;
+            TCPAddress = null;
+            TcpPort = 0;
+            ComPort = null;
+            in_SerialPort = null;
+
+        }
         public LoggerStream(bool Serial)
         {
             if (Serial)
@@ -67,6 +78,7 @@ namespace WindowsFormsApplication1
             try
             {
                 in_TCPClient = new TcpClient(add, pn);
+                //in_TCPClient = new TcpClient("192.168.1.109", 5001);
                 in_TCPClient.ReceiveTimeout = 3000;
                 in_TCPClient.SendTimeout = 30000;
 

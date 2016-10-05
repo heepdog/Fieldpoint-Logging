@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="LastPort" Type="System.String" Scope="User">
-      <Value Profile="(Default)">COM6</Value>
+      <Value Profile="(Default)">192.168.1.109 5001</Value>
     </Setting>
     <Setting Name="NetworkData" Type="System.String" Scope="User">
       <Value Profile="(Default)">SavedData</Value>
