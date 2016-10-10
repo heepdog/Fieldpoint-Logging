@@ -43,8 +43,8 @@
             this.btn_prev = new System.Windows.Forms.Button();
             this.AtribListBox = new System.Windows.Forms.ListBox();
             this.btn_calibrate = new System.Windows.Forms.Button();
-            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.btn_reloadmod = new System.Windows.Forms.Button();
+            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ModuleData)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             this.SuspendLayout();
@@ -180,10 +180,6 @@
             this.btn_calibrate.UseVisualStyleBackColor = true;
             this.btn_calibrate.Click += new System.EventHandler(this.btn_calibrate_Click);
             // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
-            // 
             // btn_reloadmod
             // 
             this.btn_reloadmod.Location = new System.Drawing.Point(359, 509);
@@ -193,6 +189,10 @@
             this.btn_reloadmod.Text = "Reload Module";
             this.btn_reloadmod.UseVisualStyleBackColor = true;
             this.btn_reloadmod.Click += new System.EventHandler(this.ReloadModule_Click);
+            // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
             // 
             // Form2
             // 

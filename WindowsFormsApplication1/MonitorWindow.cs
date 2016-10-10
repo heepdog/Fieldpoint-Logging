@@ -20,6 +20,7 @@ namespace WindowsFormsApplication1
     {
         public static FPNetwork n = new FPNetwork();
         public static LoggerStream t = new LoggerStream();
+        private DataTable temptable = new DataTable();
 
         public MonitorWindow()
         {
@@ -28,11 +29,32 @@ namespace WindowsFormsApplication1
 
         private void label20_Click(object sender, EventArgs e)
         {
+ 
 
         }
 
         private void MonitorWindow_Load(object sender, EventArgs e)
         {
+            temptable.TableName = "TestData";
+            temptable.Columns.Add("Time", typeof(DateTime));
+            temptable.Columns.Add("Appliance In", typeof(double));
+            temptable.Columns.Add("Appliance Out", typeof(double));
+            temptable.Columns.Add("Load In", typeof(double));
+            temptable.Columns.Add("Load out", typeof(double));
+            temptable.Columns.Add("Stack", typeof(double));
+            temptable.Columns.Add("Filter", typeof(double));
+            temptable.Columns.Add("Meter", typeof(double));
+
+            dgv_TempData.DataSource = temptable;
+            dgv_TempData.Columns["Time"].DefaultCellStyle.Format = "MM/dd HH:mm:ss";
+            dgv_TempData.Columns["Appliance In"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Appliance Out"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Load In"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Load out"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Stack"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Filter"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            dgv_TempData.Columns["Meter"].SortMode = DataGridViewColumnSortMode.NotSortable;
+
             string[] port = Properties.Settings.Default.LastPort.Split(' ');
             if (port.Length == 1)
             {
@@ -70,7 +92,10 @@ namespace WindowsFormsApplication1
                         n.SetNetworkPort(t);
                         btn_EditModules.Enabled = true;
                         btn_StartTest.Enabled = true;
-                     //}
+
+                    UpdateForm.RunWorkerAsync();
+
+                    //}
                 }
 
             }
@@ -214,13 +239,15 @@ namespace WindowsFormsApplication1
         {
             if (!UpdateForm.IsBusy)
             {
-                UpdateForm.RunWorkerAsync();
+                 updatetable();
+                TableTimer.Start();
                 btn_StartTest.Text = "Stop Monitor";
             }
             else
             {
                 UpdateForm.CancelAsync();
                 btn_StartTest.Text = "Start Monitor";
+                TableTimer.Stop();
             }
 
         }
@@ -239,10 +266,66 @@ namespace WindowsFormsApplication1
             ApploianceFlow.Text = n[3].getChannelDisplayValue(3).ToString("N2");
             LoadFlow.Text = n[3].getChannelDisplayValue(4).ToString("N2");
             lbl_ftCubed.Text = n[1].getChannelDisplayValue(16).ToString("N3");
+            tb_meter.Text = n[5].getChannelDisplayValue(0).ToString("N2");
+            tb_stack.Text = n[6].getChannelDisplayValue(1).ToString("N2");
+
 
 
         }
 
+        private void TableTimer_Tick(object sender, EventArgs e)
+        {
+
+            updatetable();
+
+        }
+        public void updatetable()
+        {
+            temptable.Rows.Add(DateTime.Now.TimeOfDay.ToString(@"hh\:mm\:ss"),
+                                ApplianceTempIn.Text,
+                                ApplianceOutTemp.Text,
+                                LoadInTemp.Text,
+                                LoadOutTemp.Text,
+                                tb_meter.Text,
+                                tb_stack.Text,
+                                lbl_meterTemp.Text);
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//" + "data";
+
+            temptable.WriteXml(path + ".xml", XmlWriteMode.WriteSchema, true);
+            StringBuilder row = new StringBuilder();
+            string value = String.Empty;
+            DataRow dr = temptable.Rows[temptable.Rows.Count-1];
+            int totalColumns = temptable.Columns.Count;
+
+            for (int x = 0; x < temptable.Columns.Count; x++)
+            {
+                value = dr[x].ToString();
+
+                if (value.Contains(",") || value.Contains("\""))
+                {
+                    value = '"' + value.Replace("\"", "\"\"") + '"';
+                }
+
+                row.Append(value);
+
+                if (x != (totalColumns - 1))
+                {
+                    row.Append(" , ");
+                }
+            }
+
+            WriteCharacters(row.ToString(), path);
+       }
+
+        static async void WriteCharacters(string mydata, string myfile)
+        {
+            using (StreamWriter writer = File.AppendText(myfile + ".csv"))
+            {
+                await writer.WriteLineAsync(mydata);
+            }
+        }
+
+
     }
-    }
+}
 

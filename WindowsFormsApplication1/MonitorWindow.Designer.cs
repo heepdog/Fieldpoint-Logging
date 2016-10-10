@@ -30,6 +30,7 @@ namespace WindowsFormsApplication1
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cOM6ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +46,7 @@ namespace WindowsFormsApplication1
             this.lbl_ftCubed = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dgv_TempData = new System.Windows.Forms.DataGridView();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -92,8 +93,11 @@ namespace WindowsFormsApplication1
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.UpdateForm = new System.ComponentModel.BackgroundWorker();
+            this.TableTimer = new System.Windows.Forms.Timer(this.components);
+            this.tb_stack = new System.Windows.Forms.TextBox();
+            this.tb_meter = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_TempData)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.gasValues.SuspendLayout();
@@ -255,7 +259,7 @@ namespace WindowsFormsApplication1
             this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.dataGridView1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.dgv_TempData, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
@@ -266,20 +270,24 @@ namespace WindowsFormsApplication1
             this.tableLayoutPanel1.Size = new System.Drawing.Size(980, 562);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
-            // dataGridView1
+            // dgv_TempData
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToOrderColumns = true;
-            dataGridViewCellStyle1.Format = "N2";
+            this.dgv_TempData.AllowUserToAddRows = false;
+            this.dgv_TempData.AllowUserToDeleteRows = false;
+            this.dgv_TempData.AllowUserToOrderColumns = true;
             dataGridViewCellStyle1.NullValue = null;
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 385);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(974, 174);
-            this.dataGridView1.TabIndex = 0;
+            this.dgv_TempData.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgv_TempData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_TempData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_TempData.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgv_TempData.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.dgv_TempData.Location = new System.Drawing.Point(3, 385);
+            this.dgv_TempData.Name = "dgv_TempData";
+            this.dgv_TempData.ReadOnly = true;
+            this.dgv_TempData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.dgv_TempData.Size = new System.Drawing.Size(974, 174);
+            this.dgv_TempData.TabIndex = 0;
+            this.dgv_TempData.TabStop = false;
             // 
             // tableLayoutPanel2
             // 
@@ -508,6 +516,8 @@ namespace WindowsFormsApplication1
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.tb_meter);
+            this.panel1.Controls.Add(this.tb_stack);
             this.panel1.Controls.Add(this.ApplianceBTUs);
             this.panel1.Controls.Add(this.label19);
             this.panel1.Controls.Add(this.LoadBTUs);
@@ -774,6 +784,28 @@ namespace WindowsFormsApplication1
             this.UpdateForm.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UpdateForm_DoWork);
             this.UpdateForm.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateForm_ProgressChanged);
             // 
+            // TableTimer
+            // 
+            this.TableTimer.Enabled = true;
+            this.TableTimer.Interval = 6000;
+            this.TableTimer.Tick += new System.EventHandler(this.TableTimer_Tick);
+            // 
+            // tb_stack
+            // 
+            this.tb_stack.Location = new System.Drawing.Point(290, 8);
+            this.tb_stack.Name = "tb_stack";
+            this.tb_stack.ReadOnly = true;
+            this.tb_stack.Size = new System.Drawing.Size(100, 20);
+            this.tb_stack.TabIndex = 17;
+            // 
+            // tb_meter
+            // 
+            this.tb_meter.Location = new System.Drawing.Point(184, 8);
+            this.tb_meter.Name = "tb_meter";
+            this.tb_meter.ReadOnly = true;
+            this.tb_meter.Size = new System.Drawing.Size(100, 20);
+            this.tb_meter.TabIndex = 18;
+            // 
             // MonitorWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -788,7 +820,7 @@ namespace WindowsFormsApplication1
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MonitorWindow_FormClosed);
             this.Shown += new System.EventHandler(this.MonitorWindow_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_TempData)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
@@ -848,7 +880,7 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dgv_TempData;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbl_ftCubed;
@@ -876,5 +908,8 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lb_weight;
+        private System.Windows.Forms.Timer TableTimer;
+        private System.Windows.Forms.TextBox tb_meter;
+        private System.Windows.Forms.TextBox tb_stack;
     }
 }
