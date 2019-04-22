@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace NILogger
 {
     partial class Form2
     {
@@ -192,7 +192,7 @@
             // 
             // form1BindingSource
             // 
-            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
+            this.form1BindingSource.DataSource = typeof(NILogger.Form1);
             // 
             // Form2
             // 

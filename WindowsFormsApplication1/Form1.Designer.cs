@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApplication1
+﻿namespace NILogger
 {
     partial class Form1
     {
@@ -17,6 +17,7 @@
             {
                 components.Dispose();
             }
+            portUsing.Dispose();
             base.Dispose(disposing);
         }
 
@@ -705,7 +706,7 @@
             // pictureBox1
             // 
             this.pictureBox1.ErrorImage = null;
-            this.pictureBox1.Image = global::WindowsFormsApplication1.Properties.Resources.exchanger;
+            this.pictureBox1.Image = global::NILogger.Properties.Resources.exchanger;
             this.pictureBox1.Location = new System.Drawing.Point(1101, 19);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(185, 100);
@@ -726,7 +727,7 @@
             // 
             // form1BindingSource
             // 
-            this.form1BindingSource.DataSource = typeof(WindowsFormsApplication1.Form1);
+            this.form1BindingSource.DataSource = typeof(NILogger.Form1);
             this.form1BindingSource.CurrentChanged += new System.EventHandler(this.form1BindingSource_CurrentChanged);
             // 
             // Savexml

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace WindowsFormsApplication1
+namespace NILogger
 {
     public partial class Form2 : Form
     {
@@ -152,7 +152,7 @@ namespace WindowsFormsApplication1
             }
             catch (Exception err)
             {
-                Console.WriteLine("error: ", err.Data);
+                Console.WriteLine("error: " + err.Data);
                 MessageBox.Show("error: " + err.Message);
                 //throw;
             }
@@ -232,7 +232,7 @@ namespace WindowsFormsApplication1
         private void ReloadModule_Click(object sender, EventArgs e)
         {
            // MonitorWindow.n[moduleNumber].reloadfromnetwork(); // = new WindowsFormsApplication1.FPModule(MonitorWindow.t, moduleNumber);
-            MonitorWindow.n[moduleNumber] = new WindowsFormsApplication1.FPModule(MonitorWindow.t, moduleNumber);
+            MonitorWindow.n[moduleNumber] = new NILogger.FPModule(MonitorWindow.t, moduleNumber);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WindowsFormsApplication1
+namespace NILogger
 {
     partial class MonitorWindow
     {
@@ -31,17 +31,18 @@ namespace WindowsFormsApplication1
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.connectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cOM6ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cOM6ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_meterTemp = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.lbl_probeTemp = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.lbl_deltaH = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.lbl_CFM = new System.Windows.Forms.Label();
+            this.lbl_VAC = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lbl_ftCubed = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -52,7 +53,7 @@ namespace WindowsFormsApplication1
             this.label1 = new System.Windows.Forms.Label();
             this.gasValues = new System.Windows.Forms.TableLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
-            this.lb_weight = new System.Windows.Forms.Label();
+            this.lbl_weight = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.lbl_timeElapsed = new System.Windows.Forms.Label();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -63,6 +64,8 @@ namespace WindowsFormsApplication1
             this.btn_getnetwork = new System.Windows.Forms.Button();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tb_dilution = new System.Windows.Forms.TextBox();
+            this.tb_stack = new System.Windows.Forms.TextBox();
             this.ApplianceBTUs = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.LoadBTUs = new System.Windows.Forms.TextBox();
@@ -94,8 +97,6 @@ namespace WindowsFormsApplication1
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.UpdateForm = new System.ComponentModel.BackgroundWorker();
             this.TableTimer = new System.Windows.Forms.Timer(this.components);
-            this.tb_stack = new System.Windows.Forms.TextBox();
-            this.tb_meter = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_TempData)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -113,7 +114,8 @@ namespace WindowsFormsApplication1
             // 
             this.connectToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cOM6ToolStripMenuItem,
-            this.cOM6ToolStripMenuItem1});
+            this.cOM6ToolStripMenuItem1,
+            this.newToolStripMenuItem});
             this.connectToolStripMenuItem.Name = "connectToolStripMenuItem";
             this.connectToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.connectToolStripMenuItem.Text = "Connect...";
@@ -130,6 +132,13 @@ namespace WindowsFormsApplication1
             this.cOM6ToolStripMenuItem1.Name = "cOM6ToolStripMenuItem1";
             this.cOM6ToolStripMenuItem1.Size = new System.Drawing.Size(143, 22);
             this.cOM6ToolStripMenuItem1.Text = "COM6";
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.newToolStripMenuItem.Text = "New ...";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // lbl_meterTemp
             // 
@@ -204,18 +213,18 @@ namespace WindowsFormsApplication1
             this.label6.Text = "dH";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // lbl_CFM
+            // lbl_VAC
             // 
-            this.lbl_CFM.AutoSize = true;
-            this.lbl_CFM.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbl_CFM.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_CFM.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lbl_CFM.Location = new System.Drawing.Point(123, 25);
-            this.lbl_CFM.Name = "lbl_CFM";
-            this.lbl_CFM.Size = new System.Drawing.Size(112, 23);
-            this.lbl_CFM.TabIndex = 3;
-            this.lbl_CFM.Text = "label5";
-            this.lbl_CFM.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_VAC.AutoSize = true;
+            this.lbl_VAC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbl_VAC.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_VAC.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_VAC.Location = new System.Drawing.Point(123, 25);
+            this.lbl_VAC.Name = "lbl_VAC";
+            this.lbl_VAC.Size = new System.Drawing.Size(112, 23);
+            this.lbl_VAC.TabIndex = 3;
+            this.lbl_VAC.Text = "label5";
+            this.lbl_VAC.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label4
             // 
@@ -226,7 +235,7 @@ namespace WindowsFormsApplication1
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(112, 23);
             this.label4.TabIndex = 2;
-            this.label4.Text = "CFM";
+            this.label4.Text = "Vacuum";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lbl_ftCubed
@@ -275,8 +284,8 @@ namespace WindowsFormsApplication1
             this.dgv_TempData.AllowUserToAddRows = false;
             this.dgv_TempData.AllowUserToDeleteRows = false;
             this.dgv_TempData.AllowUserToOrderColumns = true;
-            dataGridViewCellStyle1.NullValue = null;
-            this.dgv_TempData.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.NullValue = null;
+            this.dgv_TempData.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dgv_TempData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_TempData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_TempData.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
@@ -342,7 +351,7 @@ namespace WindowsFormsApplication1
             this.gasValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.gasValues.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.gasValues.Controls.Add(this.label3, 0, 6);
-            this.gasValues.Controls.Add(this.lb_weight, 0, 6);
+            this.gasValues.Controls.Add(this.lbl_weight, 0, 6);
             this.gasValues.Controls.Add(this.label20, 0, 5);
             this.gasValues.Controls.Add(this.lbl_timeElapsed, 0, 5);
             this.gasValues.Controls.Add(this.lbl_meterTemp, 1, 4);
@@ -351,7 +360,7 @@ namespace WindowsFormsApplication1
             this.gasValues.Controls.Add(this.label8, 0, 3);
             this.gasValues.Controls.Add(this.lbl_deltaH, 1, 2);
             this.gasValues.Controls.Add(this.label6, 0, 2);
-            this.gasValues.Controls.Add(this.lbl_CFM, 1, 1);
+            this.gasValues.Controls.Add(this.lbl_VAC, 1, 1);
             this.gasValues.Controls.Add(this.label4, 0, 1);
             this.gasValues.Controls.Add(this.lbl_ftCubed, 1, 0);
             this.gasValues.Controls.Add(this.label2, 0, 0);
@@ -381,17 +390,17 @@ namespace WindowsFormsApplication1
             this.label3.Text = "Weight";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // lb_weight
+            // lbl_weight
             // 
-            this.lb_weight.AutoSize = true;
-            this.lb_weight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lb_weight.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_weight.Location = new System.Drawing.Point(123, 133);
-            this.lb_weight.Name = "lb_weight";
-            this.lb_weight.Size = new System.Drawing.Size(112, 20);
-            this.lb_weight.TabIndex = 14;
-            this.lb_weight.Text = "Weight";
-            this.lb_weight.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_weight.AutoSize = true;
+            this.lbl_weight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbl_weight.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_weight.Location = new System.Drawing.Point(123, 133);
+            this.lbl_weight.Name = "lbl_weight";
+            this.lbl_weight.Size = new System.Drawing.Size(112, 20);
+            this.lbl_weight.TabIndex = 14;
+            this.lbl_weight.Text = "Weight";
+            this.lbl_weight.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label20
             // 
@@ -404,7 +413,6 @@ namespace WindowsFormsApplication1
             this.label20.TabIndex = 10;
             this.label20.Text = "Time Elapsed";
             this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.label20.Click += new System.EventHandler(this.label20_Click);
             // 
             // lbl_timeElapsed
             // 
@@ -451,6 +459,7 @@ namespace WindowsFormsApplication1
             this.btn_ResetCounters.TabIndex = 0;
             this.btn_ResetCounters.Text = "Reset Counters";
             this.btn_ResetCounters.UseVisualStyleBackColor = true;
+            this.btn_ResetCounters.Click += new System.EventHandler(this.btn_ResetCounters_Click);
             // 
             // btn_StartTest
             // 
@@ -516,7 +525,7 @@ namespace WindowsFormsApplication1
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.tb_meter);
+            this.panel1.Controls.Add(this.tb_dilution);
             this.panel1.Controls.Add(this.tb_stack);
             this.panel1.Controls.Add(this.ApplianceBTUs);
             this.panel1.Controls.Add(this.label19);
@@ -539,6 +548,22 @@ namespace WindowsFormsApplication1
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(594, 290);
             this.panel1.TabIndex = 2;
+            // 
+            // tb_dilution
+            // 
+            this.tb_dilution.Location = new System.Drawing.Point(184, 8);
+            this.tb_dilution.Name = "tb_dilution";
+            this.tb_dilution.ReadOnly = true;
+            this.tb_dilution.Size = new System.Drawing.Size(100, 20);
+            this.tb_dilution.TabIndex = 18;
+            // 
+            // tb_stack
+            // 
+            this.tb_stack.Location = new System.Drawing.Point(290, 8);
+            this.tb_stack.Name = "tb_stack";
+            this.tb_stack.ReadOnly = true;
+            this.tb_stack.Size = new System.Drawing.Size(100, 20);
+            this.tb_stack.TabIndex = 17;
             // 
             // ApplianceBTUs
             // 
@@ -678,7 +703,7 @@ namespace WindowsFormsApplication1
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::WindowsFormsApplication1.Properties.Resources.exchanger;
+            this.pictureBox1.Image = global::NILogger.Properties.Resources.exchanger;
             this.pictureBox1.Location = new System.Drawing.Point(31, 34);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(522, 270);
@@ -786,25 +811,8 @@ namespace WindowsFormsApplication1
             // 
             // TableTimer
             // 
-            this.TableTimer.Enabled = true;
-            this.TableTimer.Interval = 6000;
+            this.TableTimer.Interval = 60000;
             this.TableTimer.Tick += new System.EventHandler(this.TableTimer_Tick);
-            // 
-            // tb_stack
-            // 
-            this.tb_stack.Location = new System.Drawing.Point(290, 8);
-            this.tb_stack.Name = "tb_stack";
-            this.tb_stack.ReadOnly = true;
-            this.tb_stack.Size = new System.Drawing.Size(100, 20);
-            this.tb_stack.TabIndex = 17;
-            // 
-            // tb_meter
-            // 
-            this.tb_meter.Location = new System.Drawing.Point(184, 8);
-            this.tb_meter.Name = "tb_meter";
-            this.tb_meter.ReadOnly = true;
-            this.tb_meter.Size = new System.Drawing.Size(100, 20);
-            this.tb_meter.TabIndex = 18;
             // 
             // MonitorWindow
             // 
@@ -885,7 +893,7 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbl_ftCubed;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lbl_CFM;
+        private System.Windows.Forms.Label lbl_VAC;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label lbl_deltaH;
         private System.Windows.Forms.Label label8;
@@ -907,9 +915,10 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.ToolStripStatusLabel ConnectionStatusbar;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lb_weight;
+        private System.Windows.Forms.Label lbl_weight;
         private System.Windows.Forms.Timer TableTimer;
-        private System.Windows.Forms.TextBox tb_meter;
+        private System.Windows.Forms.TextBox tb_dilution;
         private System.Windows.Forms.TextBox tb_stack;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
     }
 }

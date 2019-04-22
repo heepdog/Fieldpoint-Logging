@@ -16,7 +16,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 
-namespace WindowsFormsApplication1
+namespace NILogger
 {
 
 
@@ -758,7 +758,7 @@ namespace WindowsFormsApplication1
                 //portUsing.Write(comout,0,comout.Length);
                 // richTextBox1.AppendText(portUsing.ReadTo("\r"));
                 string Response;
-                lock (portUsing)
+                lock (portUsing.portLock)
                 {
                     portUsing.WriteLine(TxbSerialCmd.Text.ToString());
                     Response = portUsing.ReadLine();

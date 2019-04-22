@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Collections;
 
-namespace WindowsFormsApplication1
+namespace NILogger
 {
     // Define a class to hold custom event info
     public class CustomEventArgs : EventArgs
@@ -41,6 +41,8 @@ namespace WindowsFormsApplication1
             get; set;
         }
         protected Channel[] Channels;
+        private readonly static object moduleLock = new object();
+
         public int size()
         {
             return Channels.Length;
@@ -179,6 +181,7 @@ namespace WindowsFormsApplication1
             {
                 //    int temp = int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber);
                 //  Channels[i].updateValue((float)((temp / 65535.0 * (Channels[i].rangeHigh - Channels[i].rangeLow)) + Channels[i].rangeLow));
+                Debug.WriteLine("{0}, {1}, response String: {2}", this.ToString(), this.getChannelName(i), responseString[j]);
                 Channels[i].updateValue(int.Parse(responseString[j--], System.Globalization.NumberStyles.HexNumber), filtering);
             }
 
@@ -366,11 +369,14 @@ namespace WindowsFormsApplication1
             {
                 //send Get Module ID
                 string command = ">" + address.ToString("X2") + "!A";
-                lock (Interface)
+                lock (moduleLock)
                 {
                     
                     Interface.WriteLine(command + checksum(command));
-                    response = Interface.ReadLine();
+                    do
+                    {
+                        response = Interface.ReadLine();
+                    } while (!checksumOK(response));
                     //response = response.Remove(response.Length - 1);
                 }
                 // trim acknowledgment and Cecksum and EOL '\r'
@@ -399,10 +405,13 @@ namespace WindowsFormsApplication1
                         }
                         // Get Channel Ranges
                         command = ">" + address.ToString("X2") + "!E00FF0000100001000010000100001000010000100001";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         string[] responseString = SplitResponse(response, 2);
 
@@ -413,10 +422,13 @@ namespace WindowsFormsApplication1
 
                         //get channel attributes 
                         command = ">" + address.ToString("X2") + "!E00FF0001000010000100001000010000100001000010";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         responseString = SplitResponse(response, 2);
 
@@ -464,10 +476,13 @@ namespace WindowsFormsApplication1
                         }
                         // Get Channel Ranges
                         command = ">" + address.ToString("X2") + "!E01FF000010000100001000010000100001000010000100001";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         responseString = SplitResponse(response, 2);
 
@@ -478,10 +493,13 @@ namespace WindowsFormsApplication1
 
                         //get channel attributes 
                         command = ">" + address.ToString("X2") + "!E00FF0001000010000100001000010000100001000010";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                             responseString = SplitResponse(response, 2);
                         }
 
@@ -496,10 +514,13 @@ namespace WindowsFormsApplication1
                         }
 
                         command = ">" + address.ToString("X2") + "!E010000010";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         responseString = SplitResponse(response, 2);
 
@@ -562,10 +583,13 @@ namespace WindowsFormsApplication1
 
                         // Get Channel Ranges
                         command = ">" + address.ToString("X2") + "!EFFFF00001000010000100001000010000100001000010000100001000010000100001000010000100001";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         responseString = SplitResponse(response, 2);
 
@@ -576,10 +600,13 @@ namespace WindowsFormsApplication1
 
                         //get channel attributes 
                         command = ">" + address.ToString("X2") + "!E000F00030000300003000030";
-                        lock (Interface)
+                        lock (moduleLock)
                         {
                             Interface.WriteLine(command + checksum(command));
-                            response = Interface.ReadLine();
+                            do
+                            {
+                                response = Interface.ReadLine();
+                            } while (!checksumOK(response));
                         }
                         responseString = SplitResponse(response, 2);
 
@@ -607,7 +634,8 @@ namespace WindowsFormsApplication1
             }
         }
 
-        public bool UpdateValues()
+        // todo: need to add checksum check to update values.
+        public bool UpdateValues()   
         {
             string command;
             string response;
@@ -622,10 +650,13 @@ namespace WindowsFormsApplication1
 
                 case "0101": //FP-AI-110 !F01FF A8F00FFFF246A248224902474243B2461EB
                     command = ">" + address.ToString("X2") + "!F00FF";
-                    lock (Interface)
+                    lock (moduleLock)
                     {
                         Interface.WriteLine(command + checksum(command));
-                        response = Interface.ReadLine();
+                        do
+                        {
+                            response = Interface.ReadLine();
+                        } while (!checksumOK(response));
                     }
 
                     refreshData(response,10);
@@ -652,10 +683,13 @@ namespace WindowsFormsApplication1
                 case "0107"://FP-TC-120
                             //TODO: create tead for TC
                     command = ">" + address.ToString("X2") + "!F01FF";
-                    lock (Interface)
+                    lock (moduleLock)
                     {
                         Interface.WriteLine(command + checksum(command));
-                        response = Interface.ReadLine();
+                        do
+                        {
+                            response = Interface.ReadLine();
+                        } while (!checksumOK(response));
                     }
                     /*
                     responseString = SplitResponse(response, 4);
@@ -706,10 +740,13 @@ namespace WindowsFormsApplication1
                 case "0116"://FP-510_QUAD
                             //TODO: create Values for quad
                     command = ">" + address.ToString("X2") + "!F0FFF";
-                    lock (Interface)
+                    lock (moduleLock)
                     {
                         Interface.WriteLine(command + checksum(command));
-                        response = Interface.ReadLine();
+                        do
+                        {
+                            response = Interface.ReadLine();
+                        } while (!checksumOK(response));
                     }
                     refreshData(response,1);
                     int lower = Channels[0].lastraw;
@@ -733,19 +770,37 @@ namespace WindowsFormsApplication1
             return Channels[chan].getatriblist();
         }
 
+        //private string[] SplitResponse(string r, int size)
+        //{
+        //    //r = r.Remove(r.Length - 2).TrimStart('A');
+        //    r = r.Remove(1, r.Length - 2);
+        //    int numbers = r.Length / size;
+        //    string[] next = new string[numbers];
+        //    for (int i = 0; i < numbers - 1; i++)
+        //    {
+        //        next[i] = r.Remove(size);
+        //        r = r.Remove(0, size);
+        //    }
+        //    next[numbers - 1] = r;
+        //    return next;
+        //}
+
         private string[] SplitResponse(string r, int size)
         {
-            r = r.Remove(r.Length - 2).Trim('A');
-            int numbers = r.Length / size;
+            //r = r.Remove(r.Length - 2).TrimStart('A');
+            //r = r.Remove(1, r.Length - 2);
+            int numbers = (r.Length - 3) / size;
+            int s = 1;
             string[] next = new string[numbers];
-            for (int i = 0; i < numbers - 1; i++)
+            for (int i = 0; i < numbers ; i++)
             {
-                next[i] = r.Remove(size);
-                r = r.Remove(0, size);
+                next[i] = r.Substring(s, size);
+                s += size;
             }
-            next[numbers - 1] = r;
+            //next[numbers - 1] = r;
             return next;
         }
+
 
         public static String checksum(String command)
         {
@@ -761,6 +816,24 @@ namespace WindowsFormsApplication1
             //return getHexstring((sum % 256), 1, true);
             return (sum % 256).ToString("X2");
             }
+        public static bool checksumOK(string command)
+        {
+            int sum = 0;
+            string check = command.Substring(command.Length-2);
+            //byte[] cmdarray = Encoding.ASCII.GetBytes(command.TrimStart('A').Remove(command.Length - 3));
+            byte[] cmdarray = Encoding.ASCII.GetBytes(command.Substring(1,command.Length - 3));
+
+            foreach (byte i in cmdarray)
+            {
+                sum = sum + i;
+            }
+            int result = sum % 256;
+            string hexend = result.ToString("X2");
+            Debug.WriteLine("Received check : {0}, Calculated Check {1}", check, hexend);
+            if (hexend != check)
+                Debug.Print("Checksum Error: recieved - " + check + "Calculated - " + hexend);
+            return (hexend == check);
+        }
 
         
     }

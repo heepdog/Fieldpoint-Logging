@@ -9,12 +9,17 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WindowsFormsApplication1
+
+namespace NILogger
 {
     [Serializable]
        public class LoggerStream : Stream, IDisposable
     {
+
+
+
         private Stream mystream;
+        public object portLock;
 
         private string ipAddress;// { get; set; }
         private string comport;// { get; set; }
@@ -67,7 +72,7 @@ namespace WindowsFormsApplication1
             }
             catch (Exception  e)
             {
-
+                Debug.Print(e.Message);
                 throw;
             }
         }
@@ -102,7 +107,7 @@ namespace WindowsFormsApplication1
             catch (Exception E)
             {
                 Console.WriteLine(E.Message);
-                throw;
+                //throw;
             }
 
         }
@@ -254,7 +259,7 @@ namespace WindowsFormsApplication1
             //throw new NotImplementedException();
             try
             {
-                return mystream.Read(buffer, offset, count);
+               return mystream.Read(buffer, offset, count);
             }
             catch(Exception e)
             {
@@ -278,6 +283,7 @@ namespace WindowsFormsApplication1
             //throw new NotImplementedException();
             try
             {
+                Debug.WriteLine(buffer);
                 mystream.Write(buffer, offset, count);
             }
             catch (Exception E)
@@ -288,6 +294,7 @@ namespace WindowsFormsApplication1
         }
         public void WriteLine(string Data)
         {
+            Debug.WriteLine(Data);
             Data = Data + "\r";
             byte[] buffer = Encoding.ASCII.GetBytes(Data);
             mystream.Write(buffer, 0, buffer.Length);
@@ -306,7 +313,8 @@ namespace WindowsFormsApplication1
                     sb.Append(Encoding.ASCII.GetString(singlebuf));
                 //result = result + Encoding.ASCII.GetString(singlebuf);
             } while (singlebuf[0] != '\r');
-
+            Debug.Write(DateTime.Now.ToString() + "\t");
+            Debug.WriteLine(sb);
             return sb.ToString();
         }
 
